@@ -3,7 +3,7 @@
 docker exec -it minio-bucket-notification_rabbitmq_1 /bin/bash
 
 rabbitmqadmin declare exchange name=test type=topic durable=false
-rabbitmqadmin declare exchange name=test type=topic durable=false
+rabbitmqadmin declare queue name=test
 rabbitmqadmin declare binding source="test" destination_type="queue" destination="test" routing_key="bucket-key"
 
 # MinIo
