@@ -1,0 +1,22 @@
+# RabbitMQ
+
+docker exec -it minio-bucket-notification_rabbitmq_1 /bin/bash
+
+rabbitmqadmin declare exchange name=test type=topic durable=false
+rabbitmqadmin declare exchange name=test type=topic durable=false
+rabbitmqadmin declare binding source="test" destination_type="queue" destination="test" routing_key="bucket-key"
+
+# MinIo
+
+docker exec -it minio-bucket-notification_minio_1 /bin/bash
+
+mc alias set minio http://localhost:9000 admin password
+mc admin config set minio notify_amqp:_ exchange="test" exchange_type="topic" url="$MINIO_NOTIFY_AMQP_URL" auto_deleted="false" durable="true" routing_key="bucket-key"
+mc admin service restart minio
+
+mc mb minio/test
+mc event add minio/test arn:minio:sqs::_:amqp
+
+touch file
+mc cp file minio/test
+
